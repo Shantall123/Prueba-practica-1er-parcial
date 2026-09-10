@@ -1,76 +1,27 @@
-# 04. Indicadores de Eficiencia
 
-## 1. Propósito
+## 2.1 Delimitación Conceptual
 
-Este documento define los indicadores cuantitativos que permitirán medir la **eficiencia del nuevo mecanismo de agendamiento** de GABO'S Readaptación y Movimiento, entendida como el grado en que cada operación se completa de forma correcta, con el menor tiempo y esfuerzo humano posible, sin incrementar errores ni reprocesos (ver `docs/02-usuarios-necesidades.md` para el detalle de los perfiles y necesidades que estos indicadores buscan satisfacer).
+* **Variable dependiente:** Eficiencia del proceso de agendamiento.
+* **Definición:** Grado en que cada operación de gestión de citas se completa de forma correcta utilizando el menor tiempo y esfuerzo humano (reducción de carga cognitiva y acciones físicas), sin incrementar la tasa de errores ni inducir reprocesos.
 
-Los indicadores se agrupan en dos niveles:
-
-- **Indicadores por operación**, asociados a cada transacción del flujo de agendamiento (consultar, registrar, modificar, cancelar, reagendar).
-- **Indicadores consolidados de negocio**, orientados al administrador del centro, que resumen el desempeño del sistema en el tiempo.
-
-Todos los indicadores cuentan con una **fórmula o método de cálculo verificable** mediante telemetría del sistema (marcas de tiempo, registro de eventos y clics).
+Para operacionalizar este concepto de manera integral, se evita el tiempo como única métrica, combinándolo con acciones observables (clics, pulsaciones), criterios de éxito verificables, identificación de errores críticos y métricas cuantitativas de interacción humano-computador (HCI).
 
 ---
 
-## 2. Indicadores por Operación
+## 2.2 Matriz de Operacionalización de la Eficiencia
 
-| # | Indicador | Operación | Fórmula / Método de Cálculo | Meta de Referencia |
-| :-- | :--- | :--- | :--- | :--- |
-| 1 | **Tiempo de consulta de disponibilidad (seg)** | Consultar disponibilidad | `T_fin − T_inicio` entre la activación de "Consultar Citas" y el despliegue de horarios libres, promediado por sesión. | ≤ 10 seg |
-| 2 | **Tasa de éxito directo de consulta (%)** | Consultar disponibilidad | `(N.° de consultas que encuentran horario sin reiniciar filtros / N.° total de consultas) × 100` | ≥ 90% |
-| 3 | **Tiempo de registro de cita (seg)** | Registrar cita | `T_confirmación − T_inicio_formulario`, medido por telemetría desde el primer campo diligenciado hasta el mensaje de confirmación. | ≤ 60 seg |
-| 4 | **Tasa de error de validación (%)** | Registrar cita | `(N.° de intentos de envío rechazados por validación / N.° total de intentos de envío) × 100` | ≤ 5% |
-| 5 | **Tasa de intervención manual (%)** | Registrar cita | `(N.° de registros que requirieron soporte del personal / N.° total de registros) × 100` | ≤ 5% |
-| 6 | **Tiempo de edición de cita (seg)** | Modificar cita | `T_fin − T_inicio` entre la apertura de "Editar Datos" y el banner de confirmación. | ≤ 30 seg |
-| 7 | **Tasa de éxito al primer intento (%)** | Modificar cita | `(N.° de modificaciones guardadas sin advertencias / N.° total de modificaciones) × 100` | ≥ 95% |
-| 8 | **Tasa de cancelaciones accidentales (%)** | Cancelar cita | `(N.° de cancelaciones revertidas o reportadas como erróneas / N.° total de cancelaciones) × 100` | ≤ 1% |
-| 9 | **Tiempo de liberación de horario (seg)** | Cancelar cita | `T_disponible − T_confirmación_cancelación`, tiempo entre la cancelación confirmada y la reaparición del *slot* como libre. | ≤ 5 seg |
-| 10 | **Tasa de solapamientos generados (%)** | Reagendar cita | `(N.° de reagendamientos con colisión de horario / N.° total de reagendamientos) × 100` | 0% (meta estricta) |
-| 11 | **Tiempo total de reagendamiento (seg)** | Reagendar cita | `T_confirmación_nuevo_horario − T_inicio_reagendamiento` | ≤ 45 seg |
-| 12 | **Tasa de retención de cita (%)** | Reagendar cita | `(N.° de reagendamientos completados sin pérdida del paciente / N.° total de intentos de reagendamiento) × 100` | ≥ 95% |
+| Operación | Inicio | Final | Criterio de Éxito | Acciones Observables | Errores Posibles | Indicadores Seleccionados |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Consultar disponibilidad** | El usuario activa el botón *"Consultar Citas"* o selecciona una fecha / terapeuta en la interfaz. | Despliegue completo y legible de los bloques de horarios libres en la pantalla. | Se presentan con precisión únicamente los turnos disponibles reales, sin mostrar horarios bloqueados ni fechas pasadas. | <ul><li>Clic en selector de fisioterapeuta.</li><li>Navegación en el componente calendario.</li><li>Pulsación de filtro de jornada (mañana/tarde).</li></ul> | <ul><li>Consulta de días inhábiles o feriados.</li><li>Selección de combinaciones no disponibles.</li><li>Interpretación errónea de *slots* ocupados como libres.</li></ul> | <ul><li>**Tiempo de consulta (seg):** Latencia hasta hallar un horario útil.</li><li>**Acciones requeridas:** Número total de clics o toques aplicados.</li><li>**Tasa de éxito directo:** % de consultas que encuentran horario sin reiniciar filtros.</li></ul> |
+| **Registrar una cita** | Selección de un bloque horario libre disponible en la grilla. | Aparición del mensaje de confirmación con código de reserva persistente. | La cita queda almacenada en base de datos, vinculada al paciente y terapeuta, bloqueando de forma atómica el horario para otros usuarios. | <ul><li>Ingreso de nombres, cédula y WhatsApp en campos de texto.</li><li>Selección del motivo o tipo de terapia.</li><li>Pulsación del botón primario *"Confirmar Reserva"*.</li></ul> | <ul><li>Envío de formulario con campos obligatorios vacíos.</li><li>Ingreso de número telefónico o documento con formato incorrecto.</li><li>Expiración del tiempo de sesión durante el registro.</li></ul> | <ul><li>**Tiempo de registro (seg):** Duración total del llenado y confirmación.</li><li>**Tasa de error de validación:** Número de intentos fallidos antes de enviar datos válidos.</li><li>**Intervención manual:** % de registros completados sin soporte del personal.</li></ul> |
+| **Modificar una cita** | Pulsación del comando *"Editar Datos"* desde el detalle de una cita agendada. | Despliegue del banner de retroalimentación *"Datos actualizados correctamente"*. | Los datos de contacto o detalles de la terapia se persisten actualizados sin alterar el turno de fecha/hora asignado ni corromper el historial. | <ul><li>Apertura del formulario de edición.</li><li>Sobreescritura de campos editables.</li><li>Pulsación en *"Guardar Cambios"*.</li></ul> | <ul><li>Borrado accidental de campos obligatorios.</li><li>Cierre de la ventana sin guardar modificaciones.</li><li>Falta de validación de nuevo formato de contacto.</li></ul> | <ul><li>**Tiempo de edición (seg):** Tiempo empleado para corregir datos.</li><li>**Tasa de éxito al primer intento:** % de modificaciones guardadas sin advertencias.</li><li>**Carga de clics:** Clics ejecutados desde la apertura hasta el guardado.</li></ul> |
+| **Cancelar una cita** | Pulsación del botón *"Cancelar Cita"* en el detalle de la reserva. | Cierre del modal de confirmación y liberación visual del bloque horario. | La cita cambia de estado a *"Cancelada"*, se emite la notificación correspondiente y la franja queda disponible de inmediato para otros pacientes. | <ul><li>Pulsación en *"Cancelar Cita"*.</li><li>Lectura del mensaje preventivo en el diálogo modal.</li><li>Confirmación mediante botón destructivo secundario.</li></ul> | <ul><li>Cancelación accidental por falta de diálogo de confirmación.</li><li>Cierre fortuito del modal sin completar la cancelación.</li><li>Confusión entre el botón de cancelar proceso y cancelar cita.</li></ul> | <ul><li>**Tasa de cancelaciones accidentales:** Ocurrencias reportadas de bajas erróneas.</li><li>**Tiempo de liberación (seg):** Lapso desde la solicitud hasta que el *slot* vuelve a ser visible libre.</li><li>**Pasos de confirmación:** Cumplimiento de regla de doble verificación destructiva.</li></ul> |
+| **Reagendar una cita** | Selección de la opción *"Cambiar Horario / Fecha"* en una cita activa. | Presentación del nuevo comprobante con la fecha/hora actualizada. | Transacción atómica exitosa: el horario anterior se libera para la clínica y el nuevo queda bloqueado para el paciente sin posibilidad de solapamiento. | <ul><li>Visualización del calendario contextual.</li><li>Selección del nuevo horario alternativo.</li><li>Pulsación en *"Confirmar Nuevo Horario"*.</li></ul> | <ul><li>Intentar seleccionar el mismo horario que ya se tenía.</li><li>Conflicto de concurrencia al elegir un horario reservado por otro usuario segundos antes.</li><li>Pérdida del turno original si el usuario aborta a medio camino.</li></ul> | <ul><li>**Tasa de solapamientos generados:** Frecuencia de colisión (meta estricta: 0%).</li><li>**Tiempo total de reagendamiento (seg):** Rapidez frente a la llamada o chat tradicional.</li><li>**Tasa de retención de cita:** % de reagendamientos completados sin provocar la pérdida del paciente.</li></ul> |
 
 ---
 
-## 3. Indicadores Consolidados de Negocio
+## 2.3 Procedimiento de Medición y Protocolo de Captura de Datos
 
-Estos indicadores responden directamente a la necesidad del **administrador del centro** de contar con reportes analíticos automáticos (ver perfil en `docs/02-usuarios-necesidades.md`, sección 3.4).
-
-| # | Indicador | Fórmula / Método de Cálculo | Meta de Referencia | Perfil Beneficiado |
-| :-- | :--- | :--- | :--- | :--- |
-| 1 | **% de Inasistencias (No-shows)** | `(N.° de citas marcadas como "no asistió" / N.° total de citas agendadas en el período) × 100` | ≤ 8% | Administrador, Fisioterapeuta |
-| 2 | **Tiempo de confirmación de cita** | Promedio de `T_confirmación_sistema − T_solicitud_paciente`, medido desde que el paciente inicia la solicitud hasta que recibe el código de reserva. | ≤ 60 seg | Paciente, Administrador |
-| 3 | **Tiempo de espera del paciente en sede** | Promedio de `T_inicio_atención_real − T_hora_cita_agendada`, capturado por el fisioterapeuta al iniciar la sesión en el sistema. | ≤ 10 min | Paciente, Fisioterapeuta |
-| 4 | **Tasa de ocupación de agenda (%)** | `(N.° de bloques horarios ocupados / N.° total de bloques horarios disponibles en el período) × 100`, calculable por terapeuta o global. | 70%–85% (rango óptimo) | Administrador |
-| 5 | **Volumen de citas por canal de origen** | Conteo de citas agendadas segmentado por canal (paciente autoservicio vs. registrado por recepción), reportado semanalmente. | Migración progresiva hacia autoservicio | Administrador |
-| 6 | **Carga de clics promedio del flujo completo** | Suma de clics/pulsaciones registrados desde el inicio de la consulta de disponibilidad hasta la confirmación final de la cita. | ≤ 15 acciones | Paciente, Recepcionista |
-| 7 | **Tasa de reprocesos** | `(N.° de operaciones que requirieron reiniciarse por error o abandono / N.° total de operaciones iniciadas) × 100` | ≤ 5% | Administrador |
-
----
-
-## 4. Protocolo de Captura de Datos
-
-La medición de todos los indicadores anteriores se sustenta en tres mecanismos, alineados con el protocolo ya definido para la matriz de operacionalización (`docs/01-...` / sección 2.3 del análisis conceptual):
-
-1. **Telemetría automatizada del sistema:** marcas de tiempo en milisegundos para cada evento de inicio y fin de transacción, evitando el sesgo de medición manual u observacional.
-2. **Mapeo de acciones y mapas de calor:** registro de clics, desplazamientos y foco en campos, útil para calcular la *carga de clics* y detectar fricción en la interfaz.
-3. **Registro de errores y reprocesos:** captura de validaciones fallidas de formularios y de intentos de reserva simultánea sobre un mismo bloque horario, insumo directo para la *tasa de error de validación* y la *tasa de solapamientos*.
-
-Los indicadores de negocio (sección 3) se calculan de forma agregada —diaria, semanal y mensual— a partir de los eventos capturados a nivel de operación (sección 2), de modo que el administrador del centro pueda generar reportes sin necesidad de recolección manual.
-
----
-
-## 5. Trazabilidad con Necesidades de Usuario
-
-| Necesidad (docs/02) | Indicador(es) asociado(s) |
-| :--- | :--- |
-| Paciente – Disponibilidad en tiempo real | Tiempo de consulta de disponibilidad; Tasa de éxito directo de consulta |
-| Paciente – Confirmación inmediata | Tiempo de registro de cita; Tiempo de confirmación de cita |
-| Paciente – Autogestión de citas | Tasa de cancelaciones accidentales; Tiempo total de reagendamiento |
-| Fisioterapeuta – Prevención de cruces | Tasa de solapamientos generados |
-| Fisioterapeuta – Visibilidad de agenda propia | Tiempo de espera del paciente en sede; Tasa de ocupación de agenda |
-| Recepcionista – Validaciones automáticas | Tasa de error de validación; Tasa de solapamientos generados |
-| Recepcionista – Reducción de carga cognitiva | Carga de clics promedio del flujo completo; Tasa de intervención manual |
-| Administrador – Reportes consolidados | % de Inasistencias; Tasa de ocupación de agenda; Volumen de citas por canal |
-
-Esta trazabilidad garantiza que cada indicador definido responde a una necesidad real identificada en la matriz de usuarios, cerrando el ciclo entre diseño centrado en el usuario y medición de eficiencia.
+* **Registro automatizado por telemetría del sistema:** Monitoreo de eventos de inicio y fin (marcas de tiempo en milisegundos) en cada transacción para calcular los tiempos de respuesta y ejecución sin sesgo de observación.
+* **Mapeo de acciones y mapas de calor:** Registro de cada clic, desplazamiento y foco en campos para identificar elementos que generan fricción o confusión visual.
+* **Tasa de error y reproceso:** Medición cuantitativa de las validaciones disparadas por formularios incompletos y de los intentos de reserva simultánea sobre el mismo bloque horario.
