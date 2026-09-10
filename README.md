@@ -38,9 +38,7 @@ GABO'S Readaptación y Movimiento es un centro de fisioterapia que gestiona sus 
 
 ## 🔗 Enlaces clave
 
-- **Prototipo navegable (Figma/Penpot):** [enlace]
-- **Informe final (PDF, máx. 5 páginas):** [enlace o ruta del archivo]
-- **Tablero de Issues del repositorio:** [enlace]
+- **Prototipo navegable:** https://www.figma.com/design/YUXQFCYQvep0X5UYd7qAAv/Sin-t%C3%ADtulo?node-id=3-909&t=OUQBdTtC2nyB4FzL-1
 
 ## Trazabilidad del trabajo colaborativo
 
