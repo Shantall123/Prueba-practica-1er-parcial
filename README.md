@@ -59,7 +59,9 @@ GABO'S Readaptación y Movimiento es un centro de fisioterapia que gestiona sus 
 - Antes de fusionar cualquier cambio a la rama principal, otro integrante distinto al autor revisó y comentó el Pull Request correspondiente.
 - Se verificó que cada artefacto (flujo AS-IS, usuarios, mecanismos, indicadores, metáforas y prototipo) mantuviera coherencia entre sí, ya que todos describen el mismo proceso de gestión de citas de GABO'S.
 
-## Reflexión grupal (100–150 palabras)
+## Reflexión grupal 
+
+El desarrollo de este caso nos permitió comprobar que el diseño centrado en el usuario exige coherencia entre todas sus etapas: cada decisión tomada en el análisis AS-IS se reflejó directamente en las necesidades identificadas, en el mecanismo elegido, y este a su vez en las metáforas y el prototipo final. Entendimos que una interfaz atractiva no basta si no resuelve un problema real y medible: los indicadores de eficiencia nos obligaron a justificar cada elección con evidencia, no con preferencia personal. Este ejercicio reforzó que la usabilidad, la accesibilidad y los modelos mentales no son pasos aislados, sino un mismo camino que debe sostenerse desde el primer boceto hasta la validación con usuarios reales.
 
 ## Contexto académico
 
